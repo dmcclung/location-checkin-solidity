@@ -28,23 +28,28 @@ contract Location {
 
     mapping(address => User) private userByAddress;
     mapping(address => UserLocation[]) private locationsByUser;
+    mapping(address => UserLocation[]) private possiblyFlagged;
     mapping(uint256 => LocationDescription) private locationById;
 
     // How to get all the users that share a location
     // and block number that is within a reasonable +/-
-    // Store a map of blocknumber to mapping of location id to users
+    // Mapping of blocknumber to mapping of location id to users
     mapping(uint256 => mapping(uint256 => User[])) private usersByBlockNumber;
-
-    // TODO: Figure out how to notify users
-    // TODO: Update the above collection
-    // TODO: Write all events
 
     // When someone switches their flag, an event is emitted, centralized
     // process figures out which users need to be notified and updates
     // the smart contract to record it
     event LocationCreated(uint256 locationId);
+    event LocationHidden(uint256 locationId);
+    event LocationRevealed(uint256 locationId);
+    event LocationVerified(uint256 locationId);
+    event LocationUnverified(uint256 locationId);
+
     event UserCreated(address newUser);
     event UserFlagSet(address user, bool flag);
+    event UserPossiblyFlagged(address user, address byUser, uint256 locationId, uint256 blockNumber);
+
+    event CheckIn(uint256 locationId, address user);
 
     address private verifier;
 
@@ -105,23 +110,44 @@ contract Location {
     }
 
     function checkIn(uint256 locationId) public {
-        // Create new userlocation with locationId
+        UserLocation memory newLocation = UserLocation(locationId, block.number);
+
+        UserLocation[] storage userLocations = locationsByUser[msg.sender];
+        userLocations.push(newLocation);
+
+        emit CheckIn(locationId, msg.sender);
     }
 
     function hideLocation(uint256 locationId) public {
-        // require that verifier address made the call
-        // require that location exists
-        // set hide flag
+        require(msg.sender == verifier, "Not permitted");
+        LocationDescription memory location = locationById[locationId];
+        location.hide = true;
+        
+        emit LocationHidden(locationId);
+    }
+
+    function revealLocation(uint256 locationId) public {
+        require(msg.sender == verifier, "Not permitted");
+        LocationDescription memory location = locationById[locationId];
+        location.hide = false;
+
+        emit LocationRevealed(locationId);
     }
 
     function verifyLocation(uint256 locationId) public {
-        // require that location exists
-        // require that verifier address made the call
-        // Set verified flag
+        require(msg.sender == verifier, "Not permitted");
+        LocationDescription memory location = locationById[locationId];
+        location.verified = true;
+
+        emit LocationVerified(locationId);
     }
 
-    function notifyUser(address user) public {
-        // get user of address, require it exists
-         
+    function unverifyLocation(uint256 locationId) public {
+        require(msg.sender == verifier, "Not permitted");
+        LocationDescription memory location = locationById[locationId];
+        location.verified = false;
+
+        emit LocationUnverified(locationId);
     }
+
 }
