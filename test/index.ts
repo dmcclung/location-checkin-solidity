@@ -2,18 +2,30 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 
 describe("Location", function () {
-  it("Should return the new greeting once it's changed", async function () {
-    const Greeter = await ethers.getContractFactory("Greeter");
-    const greeter = await Greeter.deploy("Hello, world!");
-    await greeter.deployed();
+  const locationImageUrl =
+    "https://imgr.search.brave.com/EReJfoKCP_Aij2WtwOyNqfaQ6PZsyiwRS5PKOtKTjPU/fit/1200/1200/ce/1/aHR0cHM6Ly9vaGlv/c3RhdGUucHJlc3Ni/b29rcy5wdWIvYXBw/L3VwbG9hZHMvc2l0/ZXMvMTk4LzIwMTkv/MDYvZXh0ZXJpb3Iy/LTIuanBn";
 
-    expect(await greeter.greet()).to.equal("Hello, world!");
+  it("should create a location", async function () {
+    const Location = await ethers.getContractFactory("Location");
+    const location = await Location.deploy();
+    await location.deployed();
 
-    const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
+    // from wei, what about the sign, store it as a string
+    const lat = ethers.utils.parseUnits("35.481918");
+    const lon = ethers.utils.parseUnits("97.508469");
 
-    // wait until the transaction is mined
-    await setGreetingTx.wait();
-
-    expect(await greeter.greet()).to.equal("Hola, mundo!");
+    await expect(
+      location.createLocation(
+        lat,
+        "N",
+        lon,
+        "W",
+        "Public Library",
+        "Community public library",
+        locationImageUrl
+      )
+    )
+      .to.emit(location, "LocationCreated")
+      .withArgs(0);
   });
 });

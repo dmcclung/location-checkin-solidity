@@ -18,7 +18,9 @@ contract Location {
 
     struct LocationDescription {
         uint256 lat;
+        string nS;
         uint256 lon;
+        string eW;
         string name;
         string description;
         string imageUrl;
@@ -67,7 +69,9 @@ contract Location {
     }
 
     function createLocation(uint256 lat, 
+                            string memory nS,
                             uint256 lon, 
+                            string memory eW,
                             string memory name, 
                             string memory description,
                             string memory imageUrl) public returns (uint256) {
@@ -79,7 +83,9 @@ contract Location {
         // Hide non-verified in the UI
         LocationDescription memory location = LocationDescription(
             lat,
+            nS,
             lon,
+            eW,
             name,
             description,
             imageUrl,

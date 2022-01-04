@@ -2,7 +2,8 @@
   "name": "hardhat-project",
   "license": "MIT",
   "scripts": {
-    "compile": "hardhat compile"
+    "compile": "hardhat compile",
+    "test": "hardhat test"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.3",
