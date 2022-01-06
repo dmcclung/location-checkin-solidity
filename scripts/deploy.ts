@@ -20,6 +20,8 @@ async function main() {
   await location.deployed();
 
   console.log("Location deployed to:", location.address);
+
+  // add locations, use graphql to find locations
 }
 
 // We recommend this pattern to be able to use async/await everywhere
