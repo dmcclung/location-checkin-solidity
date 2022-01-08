@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -41,11 +41,7 @@ contract Location {
     // When someone switches their flag, an event is emitted, centralized
     // process figures out which users need to be notified and updates
     // the smart contract to record it
-    event LocationCreated(uint256 locationId);
-    event LocationHidden(uint256 locationId);
-    event LocationRevealed(uint256 locationId);
-    event LocationVerified(uint256 locationId);
-    event LocationUnverified(uint256 locationId);
+    event LocationUpdated(uint256 locationId);
 
     event UserCreated(address newUser);
     event UserFlagSet(address user, bool flag);
@@ -95,7 +91,7 @@ contract Location {
 
         uint256 newLocationId = _locationIds.current();
         locationById[newLocationId] = location;
-        emit LocationCreated(newLocationId);
+        emit LocationUpdated(newLocationId);
         _locationIds.increment();
         return newLocationId;
     }
@@ -116,6 +112,8 @@ contract Location {
     }
 
     function checkIn(uint256 locationId) public {
+        require(locationId < _locationIds.current(), "Location does not exist");
+
         UserLocation memory newLocation = UserLocation(locationId, block.number);
 
         UserLocation[] storage userLocations = locationsByUser[msg.sender];
@@ -129,7 +127,7 @@ contract Location {
         LocationDescription memory location = locationById[locationId];
         location.hide = true;
         
-        emit LocationHidden(locationId);
+        emit LocationUpdated(locationId);
     }
 
     function revealLocation(uint256 locationId) public {
@@ -137,7 +135,7 @@ contract Location {
         LocationDescription memory location = locationById[locationId];
         location.hide = false;
 
-        emit LocationRevealed(locationId);
+        emit LocationUpdated(locationId);
     }
 
     function verifyLocation(uint256 locationId) public {
@@ -145,7 +143,7 @@ contract Location {
         LocationDescription memory location = locationById[locationId];
         location.verified = true;
 
-        emit LocationVerified(locationId);
+        emit LocationUpdated(locationId);
     }
 
     function unverifyLocation(uint256 locationId) public {
@@ -153,7 +151,7 @@ contract Location {
         LocationDescription memory location = locationById[locationId];
         location.verified = false;
 
-        emit LocationUnverified(locationId);
+        emit LocationUpdated(locationId);
     }
 
 }

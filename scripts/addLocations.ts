@@ -34,10 +34,10 @@ const imageUrls = [
 ];
 
 async function main() {
-  const locContract = await ethers.getContractAt("Location", address);
+  const contract = await ethers.getContractAt("Location", address);
 
   for (let i = 0; i < lats.length; i++) {
-    await locContract.createLocation(
+    await contract.createLocation(
       ethers.utils.parseUnits(lats[i]),
       "N",
       ethers.utils.parseUnits(lons[i]),
@@ -46,7 +46,11 @@ async function main() {
       descriptions[i],
       imageUrls[i]
     );
+
+    await contract.verifyLocation(i);
   }
+
+  await contract.hideLocation(1);
 }
 
 main().catch((error) => {
