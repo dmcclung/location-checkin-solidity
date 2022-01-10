@@ -1,12 +1,13 @@
 {
-  "name": "hardhat-project",
+  "name": "location-drop",
   "license": "MIT",
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
     "deploy:rinkeby": "hardhat run scripts/deploy.ts --network rinkeby",
     "deploy": "hardhat run scripts/deploy.ts",
-    "addLocations": "hardhat run scripts/addLocations.ts --network rinkeby"
+    "addLocations": "hardhat run scripts/addLocations.ts --network rinkeby",
+    "addUsers": "hardhat run scripts/addUsers.ts --network rinkeby"
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.3",

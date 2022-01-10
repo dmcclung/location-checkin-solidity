@@ -34,9 +34,11 @@ const imageUrls = [
 ];
 
 async function main() {
-  const contract = await ethers.getContractAt("Location", address);
+  console.log("Running script on contract", address);
+  const contract = await ethers.getContractAt("LocationDrop", address);
 
   for (let i = 0; i < lats.length; i++) {
+    console.log("Creating locationId", i);
     await contract.createLocation(
       ethers.utils.parseUnits(lats[i]),
       "N",
@@ -47,9 +49,11 @@ async function main() {
       imageUrls[i]
     );
 
+    console.log("Verifying locationId", i);
     await contract.verifyLocation(i);
   }
 
+  console.log("Hiding locationId", 1);
   await contract.hideLocation(1);
 }
 

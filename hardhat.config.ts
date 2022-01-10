@@ -22,13 +22,19 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
+const testAccounts = [];
+if (process.env.PRIVATE_KEY) testAccounts.push(process.env.PRIVATE_KEY);
+if (process.env.PRIVATE_KEY2) testAccounts.push(process.env.PRIVATE_KEY2);
+if (process.env.PRIVATE_KEY3) testAccounts.push(process.env.PRIVATE_KEY3);
+if (process.env.PRIVATE_KEY4) testAccounts.push(process.env.PRIVATE_KEY4);
+if (process.env.PRIVATE_KEY5) testAccounts.push(process.env.PRIVATE_KEY5);
+
 const config: HardhatUserConfig = {
   solidity: "0.8.4",
   networks: {
     rinkeby: {
       url: process.env.RINKEBY_URL || "",
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      accounts: testAccounts,
     },
   },
   gasReporter: {

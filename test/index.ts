@@ -1,22 +1,22 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-describe("Location", function () {
+describe("LocationDrop", function () {
   const imageUrl = "https://fakeimg.pl/300x200/";
   const lat = ethers.utils.parseUnits("35.481918");
   const lon = ethers.utils.parseUnits("97.508469");
 
   const deployContract = async function () {
-    const Location = await ethers.getContractFactory("Location");
-    const location = await Location.deploy();
-    await location.deployed();
-    return location;
+    const LocationDrop = await ethers.getContractFactory("LocationDrop");
+    const locationDrop = await LocationDrop.deploy(100, 100, 100);
+    await locationDrop.deployed();
+    return locationDrop;
   };
 
   it("should create a location", async function () {
-    const location = await deployContract();
+    const locationDrop = await deployContract();
     await expect(
-      location.createLocation(
+      locationDrop.createLocation(
         lat,
         "N",
         lon,
@@ -26,20 +26,20 @@ describe("Location", function () {
         imageUrl
       )
     )
-      .to.emit(location, "LocationUpdated")
+      .to.emit(locationDrop, "LocationUpdated")
       .withArgs(0);
   });
 
   it("should create a user", async function () {
-    const location = await deployContract();
-    await expect(location.createUser())
-      .to.emit(location, "UserCreated")
+    const locationDrop = await deployContract();
+    await expect(locationDrop.createUser())
+      .to.emit(locationDrop, "UserUpdated")
       .withArgs("0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266");
   });
 
-  it("should create a checkin event", async function () {
-    const location = await deployContract();
-    await location.createLocation(
+  it("should mint a drop", async function () {
+    const locationDrop = await deployContract();
+    await locationDrop.createLocation(
       lat,
       "N",
       lon,
@@ -49,8 +49,9 @@ describe("Location", function () {
       imageUrl
     );
 
-    await expect(location.checkIn(0))
-      .to.emit(location, "CheckIn")
-      .withArgs(0, "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266");
+    await locationDrop.createUser();
+    await expect(locationDrop.mintDrop(0, "Thank you"))
+      .to.emit(locationDrop, "DropMinted")
+      .withArgs(1);
   });
 });

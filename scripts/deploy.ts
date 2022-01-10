@@ -13,15 +13,22 @@ async function main() {
   // manually to make sure everything is compiled
   // await hre.run('compile');
 
-  // We get the contract to deploy
-  const Location = await ethers.getContractFactory("Location");
-  const location = await Location.deploy();
+  // Users receive 500 drop points every 100 blocks
+  const awardBlockHeight = 100;
+  const dropPointsAward = 500;
+  // Users can mint a drop for 500 points
+  const mintCost = 500;
 
-  await location.deployed();
+  const contractFactory = await ethers.getContractFactory("LocationDrop");
+  const contract = await contractFactory.deploy(
+    awardBlockHeight,
+    dropPointsAward,
+    mintCost
+  );
 
-  console.log("Location deployed to:", location.address);
+  await contract.deployed();
 
-  // add locations, use graphql to find locations
+  console.log("LocationDrop deployed to:", contract.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
