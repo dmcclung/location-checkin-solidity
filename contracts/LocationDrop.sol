@@ -16,7 +16,7 @@ contract LocationDrop {
         address user;
         uint256 blockNumber;
         uint256 locationId;
-        address verified;
+        address verifier;
     }
 
     struct Location {
@@ -49,6 +49,7 @@ contract LocationDrop {
     event UserUpdated(address user);
     event DropMinted(uint256 dropId);
     event DropClaimed(uint256 dropId, address user);
+    event ProofCreated(uint256 dropId, string proofUri, address user);
 
     address private verifier;
 
@@ -111,6 +112,10 @@ contract LocationDrop {
         emit LocationUpdated(newLocationId);
     }
 
+    function getUser(address user) public view returns (User memory) {
+        return userByAddress[user];
+    }
+
     function createUser() public {
         userByAddress[msg.sender] = User(_dropPointsAward, block.number);
 
@@ -125,6 +130,10 @@ contract LocationDrop {
         user.lastBlockAwarded = block.number;
 
         emit UserUpdated(msg.sender);
+    }
+
+    function getDrop(uint256 dropId) public view returns (Drop memory) {
+        return dropById[dropId];
     }
 
     function mintDrop(uint256 locationId, string memory message) public {
@@ -165,7 +174,7 @@ contract LocationDrop {
         require(unclaimedDropId == dropId, "Ids not equal");
 
         Drop memory unclaimedDrop = dropById[unclaimedDropId];
-        require(unclaimedDrop.verified == msg.sender, "Not permitted");
+        require(unclaimedDrop.verifier == msg.sender, "Not permitted");
 
         claimedDropsByAddress[msg.sender].push(unclaimedDropId);
         
@@ -181,12 +190,14 @@ contract LocationDrop {
     function setProofOfBeingThere(uint256 dropId, string memory proofUri) public {
         Proof memory proof = Proof(msg.sender, proofUri);
         proofsByDropId[dropId].push(proof);
+
+        emit ProofCreated(dropId, proofUri, msg.sender);
     }
 
     function verifyDrop(address claimer, uint256 dropId) public {
         Drop storage drop = dropById[dropId];
-        require(msg.sender == drop.verified, "Not permitted");
-        drop.verified = claimer;
+        require(msg.sender == drop.verifier, "Not permitted");
+        drop.verifier = claimer;
     }
 
     function hideLocation(uint256 locationId) public {
