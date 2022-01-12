@@ -117,6 +117,7 @@ contract LocationDrop {
     }
 
     function createUser() public {
+        // TODO: Check for user exists
         userByAddress[msg.sender] = User(_dropPointsAward, block.number);
 
         emit UserUpdated(msg.sender);

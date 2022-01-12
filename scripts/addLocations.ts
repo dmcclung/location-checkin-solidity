@@ -39,7 +39,7 @@ async function main() {
 
   for (let i = 0; i < lats.length; i++) {
     console.log("Creating locationId", i);
-    await contract.createLocation(
+    let tx = await contract.createLocation(
       ethers.utils.parseUnits(lats[i]),
       "N",
       ethers.utils.parseUnits(lons[i]),
@@ -49,12 +49,15 @@ async function main() {
       imageUrls[i]
     );
 
+    await tx.wait();
+
     console.log("Verifying locationId", i);
-    await contract.verifyLocation(i);
+    tx = await contract.verifyLocation(i);
   }
 
   console.log("Hiding locationId", 1);
-  await contract.hideLocation(1);
+  const tx = await contract.hideLocation(1);
+  await tx.wait();
 }
 
 main().catch((error) => {
